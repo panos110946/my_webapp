@@ -5,6 +5,13 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)   # επιτρέπει requests από το frontend
 
+@app.route("/")
+def home():
+    return {
+        "message": "Backend is running!"
+    }
+
+
 @app.route("/api/hello")
 def hello():
     return jsonify({"message": "Hello from Flask backend!"})
