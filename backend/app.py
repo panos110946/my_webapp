@@ -41,6 +41,28 @@ def db_test():
     except Exception as e:
         return jsonify({"status": "error", "error": str(e)}), 500
 
+@app.route("/api/tables")
+def list_tables():
+    """
+    Επιστρέφει όλα τα tables της public schema.
+    """
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT table_name
+                    FROM information_schema.tables
+                    WHERE table_schema = 'public'
+                    ORDER BY table_name;
+                """)
+                rows = cur.fetchall()
+
+        tables = [r[0] for r in rows]
+        return jsonify({"tables": tables})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 # ---------- 1. INIT DB (CREATE TABLE) ----------
 
