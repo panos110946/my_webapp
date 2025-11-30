@@ -3,8 +3,9 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import psycopg  # PostgreSQL driver
 
-app.config["JSON_AS_ASCII"] = False
+
 app = Flask(__name__)
+app.config["JSON_AS_ASCII"] = False
 CORS(app)   # επιτρέπει requests από το frontend
 
 # Παίρνουμε το DATABASE_URL από τα env vars του Render
