@@ -1,18 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>My Web App</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8" />
+    <title>Notes App</title>
+    <style>
+        body { font-family: Arial; max-width: 600px; margin: auto; padding: 20px; }
+        h1 { text-align: center; }
+        .note { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+        .note-title { font-weight: bold; }
+        input, textarea { width: 100%; margin-bottom: 10px; padding: 8px; }
+        button { padding: 10px; margin-top: 5px; cursor: pointer; }
+    </style>
 </head>
 <body>
 
-    <h1>My First Web App</h1>
+    <h1>Notes App</h1>
 
-    <button id="btn">Call Backend</button>
+    <h2>Create a Note</h2>
+    <input id="title" placeholder="Title" />
+    <textarea id="content" placeholder="Content"></textarea>
+    <button onclick="createNote()">Create Note</button>
 
-    <pre id="output">(waiting...)</pre>
+    <h2>All Notes</h2>
+    <div id="notes"></div>
 
-    <script src="script.js"></script>
+    <script>
+        const BACKEND = "https://my-webapp-backend-pfag.onrender.com";
+
+        // 1️⃣ Load all notes on page load
+        async function loadNotes() {
+            const res = await fetch(`${BACKEND}/api/notes`);
+            const notes = await res.json();
+
+            const container = document.getElementById("notes");
+            container.innerHTML = "";
+
+            notes.forEach(n => {
+                const div = document.createElement("div");
+                div.className = "note";
+                div.innerHTML = `
+                    <div class="note-title">${n.title}</div>
+                    <div>${n.content}</div>
+                    <div><small>${n.created_at}</small></div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // 2️⃣ Create note
+        async function createNote() {
+            const title = document.getElementById("title").value;
+            const content = document.getElementById("content").value;
+
+            const res = await fetch(`${BACKEND}/api/notes`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title, content })
+            });
+
+            if (res.ok) {
+                document.getElementById("title").value = "";
+                document.getElementById("content").value = "";
+                loadNotes();  // reload notes
+            } else {
+                alert("Error creating note");
+            }
+        }
+
+        loadNotes();
+    </script>
 </body>
 </html>
